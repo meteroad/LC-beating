@@ -4,7 +4,7 @@ import torch.nn as nn
 from nnAudio import Spectrogram
 import torchaudio
 import torch.nn.functional as F
-import torchsummary
+# import torchsummary
 
 import torch.nn as nn
 
@@ -166,17 +166,17 @@ class MainModule(nn.Module):
                                   output_format='Magnitude')
         self.amplitude_to_db = torchaudio.transforms.AmplitudeToDB(top_db=80)
         
-        self.conv1 = nn.Conv1d(1, channels, (3, 3), padding=(1, 0))
+        self.conv1 = nn.Conv2d(1, channels, (3, 3), padding=(1, 0))
         self.elu1 = nn.ELU()
         self.dropout1 = nn.Dropout(dropout)
         self.pool1 = nn.MaxPool2d((1, 3))
 
-        self.conv2 = nn.Conv1d(channels, channels, (1, 12), padding=(0, 0))
+        self.conv2 = nn.Conv2d(channels, channels, (1, 12), padding=(0, 0))
         self.elu2 = nn.ELU()
         self.dropout2 = nn.Dropout(dropout)
         self.pool2 = nn.MaxPool2d((1, 3))
         
-        self.conv3 = nn.Conv1d(channels, channels, (3, 3), padding=(1, 0))
+        self.conv3 = nn.Conv2d(channels, channels, (3, 3), padding=(1, 0))
         self.elu3 = nn.ELU()
         self.dropout3 = nn.Dropout(dropout)
         self.pool3 = nn.MaxPool2d((1, 3))
