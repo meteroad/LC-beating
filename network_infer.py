@@ -24,7 +24,6 @@ class FixedSizeQueue:
     def size(self):
         return len(self.queue)
     
-    
 class tcn_infer():
     def __init__(
         self,
@@ -117,8 +116,12 @@ class lc42_inference():
         
         self.model = MainModule(channels=channels)
         
+        
         # 将权重应用于网络
         self.model.load_state_dict(self.state_dict)
+        
+        
+        self.model.eval()
         
         self.tcn = self.model.tcn.layers
         
