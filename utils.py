@@ -5,6 +5,9 @@ import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 
 class Logger(SummaryWriter):
+    """
+        logger class for logging messages
+    """
     def __init__(self, logdir):
         super(Logger, self).__init__(logdir)
         self.log_idx = 0

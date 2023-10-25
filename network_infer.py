@@ -3,14 +3,17 @@ from collections import deque
 from networks.lc42_tcn import MainModule
 
 class FixedSizeQueue:
+    """
+        queue for the inference process of lc beating mechanism
+    """
     def __init__(self, max_size, size):
-        
+        # queue initialization
         zero_tensor = torch.zeros(size)
         self.queue = deque([zero_tensor for _ in range(max_size)], maxlen=max_size)
         self.max_size = max_size
 
     def enqueue(self, item):
-        # 弹出相同数量的旧元素
+        # put item into queue while pop the same size of item
         while len(self.queue) >= self.max_size:
             self.queue.pop()
         self.queue.appendleft(item)
@@ -19,12 +22,15 @@ class FixedSizeQueue:
         if len(self.queue) > 0:
             return self.queue.pop()
         else:
-            raise IndexError("队列为空")
+            raise IndexError("queue is empty")
 
     def size(self):
         return len(self.queue)
     
 class tcn_infer():
+    """
+        inference module of tcn
+    """
     def __init__(
         self,
         layer_info,
@@ -64,6 +70,7 @@ class tcn_infer():
     
     
 class latent_CausalConv1d_infer():
+    """ inference module for latent_CausalConv1d module"""
     def __init__(
         self,
         convs,
@@ -77,7 +84,7 @@ class latent_CausalConv1d_infer():
         self.latency = dilation_list[0]
         self.dilation_list = dilation_list
         buffer_length = dilation_list[-1]-dilation_list[0]+1
-        self.tcn_queue = FixedSizeQueue(max_size=buffer_length, size=[1, channels, 1]) # buffer
+        self.tcn_queue = FixedSizeQueue(max_size=buffer_length, size=[1, channels, 1]) # tcn buffer setup
         self.state_dicts = convs
         
     def infer(self, input):
@@ -106,25 +113,21 @@ class lc42_inference():
         self.latency = latency
         self.max_length = max_length
         
-        # 
+        # initialize queue for conv1 and conv3
         self.conv1_queue = FixedSizeQueue(max_size=3, size=[1, 1, 81])
         # self.conv2_queue = FixedSizeQueue(max_size=1, size=[1, 20, 26])
         self.conv3_queue = FixedSizeQueue(max_size=3, size=[1, 20, 5])
         
+        
+        # model loading
         self.weights = torch.load(weight_path, map_location=torch.device('cpu'))
-        self.state_dict = self.weights['state_dict']
-        
-        self.model = MainModule(channels=channels)
-        
-        
-        # 将权重应用于网络
+        self.state_dict = self.weights['state_dict']      
+        self.model = MainModule(channels=channels)   
         self.model.load_state_dict(self.state_dict)
-        
         
         self.model.eval()
         
         self.tcn = self.model.tcn.layers
-        
         self.tcn_modules = []
         
         for layer in self.tcn:
@@ -134,8 +137,7 @@ class lc42_inference():
         print("initialization finished.")
         
             
-    def inference_by_frame(self, x):
-        
+    def inference_by_frame(self, x): 
         self.conv1_queue.enqueue(x)
         conv1_input = torch.stack(list(self.conv1_queue.queue)[:])
         conv1_input = conv1_input.permute(2, 1, 0, 3)
@@ -166,7 +168,7 @@ class lc42_inference():
         conv3_output = self.model.dropout3(conv3_output)
         conv3_output = self.model.pool3(conv3_output)
         
-        tcn_input = conv3_output[:,:,1,:] # 最后一个可信帧
+        tcn_input = conv3_output[:,:,1,:] # 
            
         for t_modules in self.tcn_modules:
             tcn_input = t_modules.infer(tcn_input) # TODO: something wrong, but i don know how and where
@@ -183,7 +185,7 @@ class lc42_inference():
         y = y.squeeze(-1)
         
         return y
-           
+
         
 if __name__ == "__main__":
     duration = 1001
@@ -194,10 +196,8 @@ if __name__ == "__main__":
     for i in range(duration):
         o = infer.inference_by_frame(input[:,:,i,:])
         if stacked_tensor is None:
-            # 如果是第一次迭代，将当前张量赋值给堆叠张量
             stacked_tensor = o.unsqueeze(0)
         else:
-            # 否则，使用torch.stack()函数将当前张量堆叠到堆叠张量上
             stacked_tensor = torch.cat((stacked_tensor, o.unsqueeze(0)), dim=0)
     
     print("1")

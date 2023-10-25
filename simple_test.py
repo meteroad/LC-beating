@@ -64,7 +64,7 @@ class test_func():
             
         self.checkpoint_file_pp = os.path.join(checkpoint_path_pp, config.check_num_pp+'.pkl')
 
-        # load checkpoint
+        # load checkpoint file
         network_module = importlib.import_module('networks.' + config.network)
         # net = network_module.MainModule(device=device)
         self.net = network_module.MainModule()
@@ -79,6 +79,7 @@ class test_func():
         self.net.eval()
         print("checkfile {} successfully loaded".format(self.checkpoint_file))
         
+        
         if config.inference_model == "dl":
             pp_network_module = importlib.import_module('networks_pp.' + self.pp_network)
             self.net_pp = pp_network_module.MainModule()
@@ -88,7 +89,7 @@ class test_func():
             self.net_pp.eval()  
             print("checkfile {} successfully loaded".format(self.checkpoint_file_pp))
         
-        if self.mode == "online":
+        elif self.mode == "online":
             if self.inference_model == "DBN":
                 self.estimator_b = madmom.features.beats.DBNBeatTrackingProcessor(
                     min_bpm=55,
@@ -112,9 +113,7 @@ class test_func():
                 self.estimator_b = simple_findpeak(pre_max=distance_b, post_max=1, pre_avg=distance_b, post_avg=1, delta=0.2, wait=distance_b)
                 self.estimator_d = simple_findpeak(pre_max=distance_d, post_max=1, pre_avg=distance_d, post_avg=1, delta=0.2, wait=distance_d)
                 
-            # elif self.inference_model == "dl":
-            #     self.estimator = 
-        
+    # rtf matrix calculation
     def calculate_rtf(self):
         rtf_total = []
         for dataset in self.datasets: 
@@ -170,7 +169,6 @@ class test_func():
                 
 
     def test(self):    
-        # set model to eval mode        
         results = {} # storage for our result metrics
         result_str = ""
       
@@ -312,8 +310,10 @@ class test_func():
         with open(results_dir, 'a') as txt_file:
             txt_file.write(result_str)
 
+    # find the last checkpoint file
     def findlast(self, input_path, file_ext='*.pkl'):
         return max(glob.glob(os.path.join(input_path, file_ext)), key=os.path.getmtime)
+    
     
     def real_time(self, audio):
         self.counter = 0

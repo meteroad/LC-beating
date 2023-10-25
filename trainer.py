@@ -16,12 +16,16 @@ import numpy as np
 import scipy.stats as st
 
 class Trainer(object):
+    """
+        training class
+    """
     def __init__(self, config):    
         self.iftestmode = config.iftestmode
         self.h5_file_augment = True
         if self.iftestmode:
             self.h5_file_augment = False
             
+        # choose the training target
         self.only_beat = config.only_beat
         self.only_downbeat = config.only_downbeat
                       
@@ -38,7 +42,6 @@ class Trainer(object):
         else:
             self.subset = "train"
             
-        
         # Create logger
         self.log_file = config.log_file
         self.checkname = config.checkname
@@ -95,17 +98,19 @@ class Trainer(object):
         
         # loss settings
         self.loss = config.loss
-        self.loss_param = config.loss_param
+        self.loss_param = config.loss_param   
         
+        # kernel settings     
         self.kernel = torch.Tensor(self.get_kernel()).to(self.device)
         
-        # setup the dataloaders
+        # setup dataloaders, models, losses and optimizers
         self.configure_dataloader()     
         self.build_model()   
         self.configure_loss()
         self.configure_optimizers()
               
     def configure_dataloader(self):
+        # dataloader configuration
         train_datasets = []
         val_datasets = []
         for dataset in self.train_sets:
@@ -158,12 +163,12 @@ class Trainer(object):
         return [kern1d]
     
     def configure_loss(self):
-        # 所有的lossfunc返回值均有三个
+        # loss configuration
         if self.loss =="weightloss":
             self.lossfunc = Weight_BCELoss()   
         if self.loss == "softbce": # not good
             self.lossfunc = SoftBCELoss()   
-        if self.loss == "softbce_n":
+        if self.loss == "softbce_n": # default loss
             self.lossfunc = SoftBCELoss_new()
              
     def build_model(self):
@@ -370,12 +375,6 @@ class Trainer(object):
     def load_checkpoint(self, checkfile):
         data = torch.load(checkfile)
         return data["state_dict"], data["optimizer"],  data["lr"], data["epoch"], data["best_epoch"],  data["best_fmeasure"]
-    
-    def load_checkpoint_former(self, checkfile):
-        data = torch.load(checkfile)
-        return data["epoch"], data["state_dict"], data["best_epoch"], data["best_fmeasure"]
-    
-
         
     def train(self):
         #====================================== Training ===========================================#
@@ -413,7 +412,7 @@ class Trainer(object):
             epoch_loss = 0.
             epoch_beat_loss = 0.
             epoch_downbeat_loss = 0.
-            
+                     
             for i, data in enumerate(self.train_dataloader): 
                 if self.iftestmode and i > self.epoch_batch:
                     break
@@ -447,6 +446,7 @@ class Trainer(object):
                 if self.only_downbeat:
                     loss = d_loss     
                 loss.backward()
+                
                 # torch.nn.utils.clip_grad_norm_(self.net.parameters(), max_norm=self.clip_grad)
                 self.optimizer.step()
                 epoch_loss += loss.item()

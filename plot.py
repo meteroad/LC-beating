@@ -1,12 +1,9 @@
-import io
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
-import PIL.Image
 
 def make_table(songs, sort_key="Beat F-measure"):
-
     # first sort by ascending f-measure on beats
     songs = sorted(songs, key=lambda k: k[sort_key])
 

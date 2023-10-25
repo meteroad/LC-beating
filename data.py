@@ -23,7 +23,9 @@ torchaudio.set_audio_backend("soundfile")
 """
 
 class DownbeatDataset(torch.utils.data.Dataset):
-    """ Downbeat Dataset. """
+    """ 
+        class
+    """
     def __init__(self, 
                  h5_dir, 
                  audio_sample_rate=16000, 
@@ -122,7 +124,7 @@ class DownbeatDataset(torch.utils.data.Dataset):
         audio = audio.float()
         target_beat = target_beat.float()
                
-        # calculate time stretch factor for 
+        # calculate time stretch factor
         scale_factor = 1.0    
         if self.augment: 
             scale_factor = np.random.normal(1.0, 0.5)  # 正态分布
@@ -143,7 +145,6 @@ class DownbeatDataset(torch.utils.data.Dataset):
                 audio_start = 0
             else:  
                 audio_start = random.randint(0, int(N_audio -self.length*scale_factor) -1)  
-                # audio_start = 0  
                   
             audio_stop  = int(audio_start + self.length*scale_factor)
             target_start = int(audio_start / self.target_factor)
@@ -165,7 +166,7 @@ class DownbeatDataset(torch.utils.data.Dataset):
             padr = int(pad_size / 2)
             target_beat = F.pad(target_beat, (padl, padr))
             
-        # do augmentation
+        # do augmentation if needed
         if self.augment: 
             audio, target_beat, target_tempo, target_chord = self.apply_augmentations(audio, target_beat, target_tempo, target_chord, scale_factor=scale_factor)
         

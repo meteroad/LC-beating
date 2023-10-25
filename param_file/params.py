@@ -1,8 +1,8 @@
 ## -- global params -- ##
-target_sr = 16000
+target_sr = 16000 # sample rate
 
-length_sec = 30 # 8 for bilstm, 30
-limit_sec = 8 # 可以进行evaluate的最小长度
+length_sec = 30 # 8 for bilstm, 30 for tcn
+limit_sec = 8 # smallest length for evaluation
 hop_length = 160 # 160
 
 train_length = target_sr * length_sec
