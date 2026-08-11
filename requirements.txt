@@ -1,0 +1,16 @@
+torch
+torchaudio
+numpy
+scipy
+pandas
+librosa
+h5py
+matplotlib
+tqdm
+mir_eval
+madmom
+nnAudio
+pyaudio
+torchsummary
+tensorboard
+importlib-metadata
