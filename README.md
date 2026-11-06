@@ -76,7 +76,22 @@ python train.py \
 
 ## Citation
 
-If you use this code, please cite the corresponding LC-beating paper. Citation metadata will be added after publication.
+If you use this code, please cite:
+
+Xinlu Liu, Jiale Qian, Qiqi He, Yi Yu, and Wei Li. "LC-Beating: An Online System for Beat and Downbeat Tracking using Latency-Controlled Mechanism." In *2023 IEEE International Conference on Multimedia and Expo (ICME)*, pp. 1098-1103, 2023. [DOI: 10.1109/ICME55011.2023.00192](https://doi.org/10.1109/ICME55011.2023.00192).
+
+```bibtex
+@inproceedings{liu2023lcbeating,
+  author    = {Xinlu Liu and Jiale Qian and Qiqi He and Yi Yu and Wei Li},
+  title     = {{LC-Beating}: An Online System for Beat and Downbeat Tracking using Latency-Controlled Mechanism},
+  booktitle = {2023 IEEE International Conference on Multimedia and Expo (ICME)},
+  year      = {2023},
+  pages     = {1098--1103},
+  publisher = {IEEE},
+  doi       = {10.1109/ICME55011.2023.00192},
+  url       = {https://doi.org/10.1109/ICME55011.2023.00192}
+}
+```
 
 ## License
 
